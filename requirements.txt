@@ -1,0 +1,11 @@
+# requirement.txt
+# Run pip install -r requirements.txt
+
+duckdb==0.7.1
+pandas==1.5.2
+seaborn==0.12.1
+matplotlib==3.6.2
+polars==0.14.31
+
+SQLAlchemy==1.4.44
+duckdb-engine==0.6.5

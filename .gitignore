@@ -1,0 +1,8 @@
+database/*.*
+!database/
+datasets/*.csv
+*.*backup
+venv/
+.git
+.ipynb_checkpoints
+
