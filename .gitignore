@@ -1,6 +1,8 @@
 database/*.*
+!database/.*
 !database/
 datasets/*.csv
+!datasets/
 *.*backup
 venv/
 .git
