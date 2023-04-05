@@ -11,7 +11,7 @@
 - Ao invés de usar pandas e numpy para carregar e tratar dados, DuckDB faz isso com todas as vantagens de se usar um RDBMS.
 - Não necessita de interfaces client/server e não possui dependencias externas.
 
-## Limitaçõesg
+## Limitações
 	- Foi desenvolvido para rodar em **uma máquina somente**.
 	- **Não** se trata de uma multi-tenant database. Cada usuário tem de ter sua cópia da base de dados (o uso de  Airflow, S3, Parquet and DBT pode mitigar essas limitações).
 	- Não deve ser usada como base de dados transacional. No caso deste projeto a construição de um data warehouse não enseja nessa necessidade.
@@ -40,7 +40,7 @@ touch requirements.txt
 
 ### Abrir o arquivo e inserir os seguintes requerimentos
 
-	duckdb==0.6.1
+	duckdb==0.7.1
 	pandas==1.5.2
 	seaborn==0.12.1
 	matplotlib==3.6.2
