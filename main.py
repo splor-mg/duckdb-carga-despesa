@@ -1,46 +1,106 @@
-import sys
-import os
-from constants import *
 import pandas as pd
 import glob
-import time
 import duckdb
+import os
 
-def connect_duckdb():
-    conn = duckdb.connect()
-    return conn
+DB_NAME = 'database/dadosmg.db'
+CSV_PATH = 'datasets/'
 
-def main():
-    print("Hello")
+# obtem lista de paths para arquivos CSV localizados no caminho CSV_PATH
+file_paths = [i.replace('\\', '/') for i in list(glob.iglob(f'{CSV_PATH}*.csv'))]
 
-def load_datasets(path):
+# paths de bases csv que sao separadas por anos
+file_paths_desp = [x for x in file_paths if "dm_empenho_desp_" in x]
+file_paths_ft = [x for x in file_paths if "ft_despesa_" in x]
 
-    df = pd.concat([pd.read_csv(f, delimiter=';', decimal=',') for f in glob.glob(path)])
-    return df
+# paths de bases csv que não são separadas por anos
+file_paths = list(set(file_paths) - set(file_paths_desp) - set(file_paths_ft))
+
+# True Dropa todas as tabelas atuais da database
+DROP_TABLES = True
+
+def drop_tables(con=None):
+
+    tables_list = con.execute("""SHOW TABLES""").fetchall()
+    if tables_list:
+        for table_name in tables_list:
+            con.execute(f"""DROP TABLE {table_name[0]} """)
+            print(f"Tabela {table_name} apagada.")
+    else:
+        print(f"Não há tabelas na database {DB_NAME}")
 
 
-def chek_columns_types(path, conn):
-    df = conn.execute("""
-        SELECT *
-        FROM 'dataset/*.csv'
-    """).df()
-    conn.register("df_view", df)
-    conn.execute("DESCRIBE df_view").df() # doesn't work if you don't register df as a virtual table
+def tables_from_csv(file_paths):
+
+    for file in file_paths:
+        _, tail = os.path.split(file)
+        name, file_extension = os.path.splitext(tail)
+        con.execute(f"""CREATE TABLE '{name}' AS SELECT * FROM read_csv_auto('{file}')""")
+        print(f"Arquivo {file} carregado para tabela {name}\n")
+
+    print('-------------------------------------------------------')
+
+def append_from_csv(file_paths_append, tbl_agg_name):
+    #tbl_agg_name = 'ft_despesa'
+    df_agg = pd.DataFrame()
+    num_linhas = 0
+
+    #Toma o primeiro arquivo da lista de csvs como definidor dos nomes das colunas e tipos
+    temp_csv = con.sql(f"""SELECT * FROM '{file_paths_append[0]}' LIMIT 10 """)
+
+    # cria lista contendo nomes e tipos das colunas lidas em temp_csv
+    table_columns = [str(temp_csv.columns[i] + ' ' + temp_csv.dtypes[i]) for i in range(len(temp_csv.columns))]
+
+    # Concatena lista de strings em uma string somente para uso na criação da tabela nova.
+    table_columns = ', '.join(table_columns)
+
+    # Cria tabela para agregar arquivos CSV de faturamento
+    con.execute(f"""CREATE TABLE '{tbl_agg_name}'({table_columns}) """)
+    print(f'Tabela {tbl_agg_name} criada')
+
+    for file in file_paths_append:
+        print(f'Lendo:', file)
+        df1 = con.execute(f"""SELECT * FROM '{file}' """).df()
+        con.execute(f"""INSERT INTO '{tbl_agg_name}' SELECT * FROM df1""")
+        print(f'Arquivo {file} concatenado na tabela {tbl_agg_name}\n')
+        num_linhas += len(df1)
+
+    print('-------------------------------------------------------')
+
+    print('Total de linhas tabelas lidas:', num_linhas)
+    print('Num linhas da tabela agregada:')
+    print(con.sql(f"""SELECT COUNT(*) FROM {tbl_agg_name}"""))
+
+
+    con.table(tbl_agg_name).show()
+
+
+
+def descbribe_db(con=None):
+    print(con.sql("DESCRIBE"))
+
+
+def describe_table(con, table_name):
+    print(con.table(table_name).describe())
+
+
+def group_by_field(con, table_name, field_agg, field_values):
+
+    rel = con.sql(f"""SELECT * FROM {table_name}""")
+    agg = rel.aggregate(f"{field_agg} AS 'agregado', sum({field_values}), count({field_agg})")
+    print(agg)
 
 
 if __name__ == '__main__':
-    conn = duckdb.connect()
+    con = duckdb.connect(DB_NAME) #Cria se não existe e se conecta à base de dados
 
-    res = conn.execute("""
-    SELECT COUNT(*)
-    FROM read_csv('stock_market_data/nasdaq/csv/*.csv', header=True, dateformat='%d-%m-%Y', columns={'Date': 'DATE', 'Low': 'DOUBLE', 'Open': 'DOUBLE', 'Volume': 'BIGINT', 'High': 'DOUBLE', 'Close': 'DOUBLE', 'AdjustedClose': 'DOUBLE'}, filename=True)
-    """).fetchall()
-    print(res)
+    if DROP_TABLES:
+        drop_tables(con)
 
+    tables_from_csv(file_paths)
+    append_from_csv(file_paths_desp, 'dm_empenho_desp')
+    append_from_csv(file_paths_ft, 'ft_despesa')
+    descbribe_db(con)
+    describe_table(con,'ft_despesa')
+    group_by_field(con, 'ft_despesa', 'ano_particao', 'vr_liquidado')
 
-    PATH = 'stock_market_data/nasdaq'
-    for filename in glob.iglob(f'{PATH}/csv/*.csv'):
-        dest = f'{PATH}/parquet/{filename.split("/")[-1][:-4]}.parquet'
-        conn.execute(f"""
-        COPY (SELECT * FROM read_csv('{filename}', header=True, dateformat='%d-%m-%Y', columns={{'Date': 'DATE', 'Low': 'DOUBLE', 'Open': 'DOUBLE', 'Volume': 'BIGINT', 'High': 'DOUBLE', 'Close': 'DOUBLE', 'AdjustedClose': 'DOUBLE'}}, filename=True)) 
-        TO '{dest}' (FORMAT 'parquet')""")

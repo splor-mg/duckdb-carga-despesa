@@ -42,8 +42,7 @@ touch requirements.txt
 
 	duckdb==0.7.1
 	pandas==1.5.2
-	seaborn==0.12.1
-	matplotlib==3.6.2
+
 
 ### Instala requerimentos
 ```python
@@ -60,5 +59,11 @@ pip install notebook
 jupyter notebook
 ```
 
-### Execução do dadosmg_basics
-Baixar os arquivos tar.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso abrir o notebook no jupyter e executar.
+### Execução no Jupyter Notebook
+Baixar os arquivos tar.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso abrir o notebook 'dadosmg_basics' no jupyter e executar.
+
+### Execução no Python
+Baixar os arquivos tar.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso executar o main.py:
+```python
+python main.py
+```

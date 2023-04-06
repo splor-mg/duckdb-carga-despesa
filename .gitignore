@@ -7,4 +7,5 @@ datasets/*.csv
 venv/
 .git
 .ipynb_checkpoints
+.idea
 
