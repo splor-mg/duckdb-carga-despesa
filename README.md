@@ -67,3 +67,9 @@ Baixar os arquivos tar.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/de
 ```python
 python main.py
 ```
+
+### Visualizar Database
+
+A ferramenta open source [TAD Viewer](https://www.tadviewer.com/) pode ser utilizada para visualizar a base de dados do DuckDB ou arquivos csv, parquet, json antes ou durante o processo de importação.
+
+![imagem](images/tad-home.png)

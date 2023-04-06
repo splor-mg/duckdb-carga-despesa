@@ -3,7 +3,7 @@ import glob
 import duckdb
 import os
 
-DB_NAME = 'database/dadosmg.db'
+DB_NAME = 'database/dadosmg.duckdb'
 CSV_PATH = 'datasets/'
 
 # obtem lista de paths para arquivos CSV localizados no caminho CSV_PATH
@@ -38,7 +38,7 @@ def tables_from_csv(file_paths):
         con.execute(f"""CREATE TABLE '{name}' AS SELECT * FROM read_csv_auto('{file}')""")
         print(f"Arquivo {file} carregado para tabela {name}\n")
 
-    print('-------------------------------------------------------')
+    print('-------------------------------------------------------\n')
 
 def append_from_csv(file_paths_append, tbl_agg_name):
     #tbl_agg_name = 'ft_despesa'
@@ -56,7 +56,7 @@ def append_from_csv(file_paths_append, tbl_agg_name):
 
     # Cria tabela para agregar arquivos CSV de faturamento
     con.execute(f"""CREATE TABLE '{tbl_agg_name}'({table_columns}) """)
-    print(f'Tabela {tbl_agg_name} criada')
+    print(f'Tabela {tbl_agg_name} criada\n')
 
     for file in file_paths_append:
         print(f'Lendo:', file)
