@@ -3,3 +3,4 @@
 
 duckdb==0.7.1
 pandas==1.5.2
+ckanapi==4.0
