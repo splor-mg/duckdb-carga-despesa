@@ -66,10 +66,10 @@ Baixar os arquivos csv.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/de
 **NOTA**: Durante os testes realizados o kernel do Jupyter se mostrou instável, não conseguindo importar os dados corretamente e reiniciando durante o processo.
 
 ### Execução no Python
-Baixar os arquivos csv.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso executar o main.py em linha de comando:
-```python
-python main.py
-```
+make download: Baixar arquivos tar.gz por portal dadosmg.  
+make run: Executa script de carga de dados.  
+make all: Faz download dos arquivos e executa script de carga.
+
 
 ### Visualização de Dados
 
