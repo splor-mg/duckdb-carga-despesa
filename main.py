@@ -2,27 +2,7 @@ import glob
 import duckdb
 import os
 
-
-DB_NAME = 'database/dadosmg.duckdb'
-DATASETS_DIR = 'despesa/'
-DATASET_DIR = 'datasets/'
-DATA_DIR = 'data/'
-DATA_PATH = DATASET_DIR + DATASETS_DIR + DATA_DIR
-
-# obtem lista de paths para arquivos CSV localizados no caminho DATA_PATH
-file_paths = [i.replace('\\', '/') for i in list(glob.iglob(f'{DATA_PATH}*.csv*'))]
-
-# paths de bases csv que sao separadas por anos
-file_paths_desp = [x for x in file_paths if "dm_empenho_desp_" in x]
-file_paths_ft = [x for x in file_paths if "ft_despesa_" in x]
-
-# paths de bases csv que não são separadas por anos
-file_paths = list(set(file_paths) - set(file_paths_desp) - set(file_paths_ft))
-
-# True Dropa todas as tabelas atuais da database
-DROP_TABLES = True
-
-def drop_tables(con=None):
+def drop_tables(DB_NAME, con=None):
 
     tables_list = con.execute("""SHOW TABLES""").fetchall()
     if tables_list:
@@ -33,7 +13,7 @@ def drop_tables(con=None):
         print(f"Não há tabelas na database {DB_NAME}")
 
 
-def tables_from_csv(file_paths):
+def tables_from_csv(con, file_paths):
 
     for file in file_paths:
         _, tail = os.path.split(file)
@@ -43,7 +23,7 @@ def tables_from_csv(file_paths):
 
     print('-------------------------------------------------------\n')
 
-def append_from_csv(file_paths_append, tbl_agg_name):
+def append_from_csv(con, file_paths_append, tbl_agg_name):
     num_linhas = 0
     exec_error = False
     files_error = []
@@ -101,14 +81,35 @@ def group_by_field(con, table_name, field_agg, field_values):
     agg = rel.aggregate(f"{field_agg} AS 'agregado', sum({field_values}), count({field_agg})")
     print(agg)
 
+def main():
+    DB_NAME = 'database/dadosmg.duckdb'
+    DATASETS_DIR = 'despesa/'
+    DATASET_DIR = 'datasets/'
+    DATA_DIR = 'data/'
+    DATA_PATH = DATASET_DIR + DATASETS_DIR + DATA_DIR
 
-if __name__ == '__main__':
+    # obtem lista de paths para arquivos CSV localizados no caminho DATA_PATH
+    file_paths = [i.replace('\\', '/') for i in list(glob.iglob(f'{DATA_PATH}*.csv*'))]
+
+    # paths de bases csv que sao separadas por anos
+    file_paths_desp = [x for x in file_paths if "dm_empenho_desp_" in x]
+    file_paths_ft = [x for x in file_paths if "ft_despesa_" in x]
+
+    # paths de bases csv que não são separadas por anos
+    file_paths = list(set(file_paths) - set(file_paths_desp) - set(file_paths_ft))
+
+    # True Dropa todas as tabelas atuais da database
+    DROP_TABLES = True
+
     con = duckdb.connect(DB_NAME) #Cria se não existe e se conecta à base de dados
 
     if DROP_TABLES:
-        drop_tables(con)
+        drop_tables(DB_NAME, con)
 
-    tables_from_csv(file_paths)
+    tables_from_csv(con, file_paths)
 
-    append_from_csv(file_paths_desp, 'dm_empenho_desp')
-    append_from_csv(file_paths_ft, 'ft_despesa')
+    append_from_csv(con, file_paths_desp, 'dm_empenho_desp')
+    append_from_csv(con, file_paths_ft, 'ft_despesa')
+
+if __name__ == '__main__':
+    main()
