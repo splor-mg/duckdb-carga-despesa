@@ -1,5 +1,6 @@
 import duckdb
 import logging
+import argparse
 from pathlib import Path
 
 def drop_tables(DB_NAME, con=None):
@@ -74,11 +75,14 @@ def group_by_field(con, table_name, field_agg, field_values):
     print(agg)
 
 def main():
-    DB_NAME = 'database/dadosmg.duckdb'
-    DATASETS_DIR = 'despesa/'
-    DATASET_DIR = 'datasets/'
-    DATA_DIR = 'data/'
-    data_path = Path(DATASET_DIR, DATASETS_DIR, DATA_DIR)
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--db_name', default='database/dadosmg.duckdb')
+    parser.add_argument('--data_dir', default='datasets/despesa/data')
+    parser.add_argument('--drop_tables', action=argparse.BooleanOptionalAction, help='Dropa todas as tabelas atuais da database', default=True)
+
+    args = parser.parse_args()
+    
+    data_path = Path(args.data_dir)
 
     # obtem lista de paths para arquivos CSV localizados no caminho DATA_PATH
     file_paths = data_path.glob('*.csv.gz')
@@ -90,13 +94,10 @@ def main():
     # paths de bases csv que não são separadas por anos
     file_paths = list(set(file_paths) - set(file_paths_desp) - set(file_paths_ft))
 
-    # True Dropa todas as tabelas atuais da database
-    DROP_TABLES = True
+    con = duckdb.connect(args.db_name) #Cria se não existe e se conecta à base de dados
 
-    con = duckdb.connect(DB_NAME) #Cria se não existe e se conecta à base de dados
-
-    if DROP_TABLES:
-        drop_tables(DB_NAME, con)
+    if args.drop_tables:
+        drop_tables(args.db_name, con)
 
     tables_from_csv(con, file_paths)
 
