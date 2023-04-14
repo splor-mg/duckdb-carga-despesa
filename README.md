@@ -16,11 +16,13 @@
 ## Limitações
 - Foi desenvolvido para rodar em uma máquina somente.
 - Não se trata de uma multi-tenant database. Cada usuário tem de ter sua cópia da base de dados (o uso de  Airflow, S3, Parquet and DBT pode mitigar essas limitações).
-- Não deve ser usada como base de dados transacional. No caso deste projeto a construção de um data warehouse não enseja nessa necessidade.
+- Não deve ser usada como base de dados transacional. No caso deste projeto, a construção de um data warehouse não enseja nessa necessidade.
 
 
 
-## Instruções de instalação e manipulações básicas do DuckDB no Windows
+## Instalação no Windows
+
+Após clonar o projeto, seguir as etapas a seguir.
 
 
 ### Criar ambiente virtual do projeto
@@ -30,45 +32,48 @@ python -m venv venv
 ```
 
 ### Ativar ambiente virtual do projeto
-```python
+
+Linha de comando no Windows:
+```cmd
+cd diretorio/do/projeto
 venv\Scripts\activate
 ```
 
-### Criar arquivo de requerimentos
-```python
-touch requirements.txt
+Git bash:
+```gitbash
+cd diretorio/do/projeto
+source venv\Scripts\activate
 ```
 
-### Abrir o arquivo e inserir os seguintes requerimentos
-
-	duckdb==0.7.1
-	pandas==1.5.2
-
-
-### Instala requerimentos
+### Instalar requerimentos
 ```python
 pip install -r requirements.txt
 ```
 
-### instala jupyter notebook
+### Instalar Jupyter Notebook (opcional)
 ```python
 pip install notebook
 ```
 
-### Inicia o jupyter notebook
-```python
-jupyter notebook
+## Execução no Python
+
+### Ativar o ambiente virtual. 
+
+Linha de comando no Windows:
+```cmd
+cd diretorio/do/projeto
+venv\Scripts\activate
 ```
 
-### Execução no Jupyter Notebook
-Baixar os arquivos csv.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso abrir o notebook 'dadosmg_basics.ipynb' no jupyter e executar.  
+Git bash:
+```gitbash
+cd diretorio/do/projeto
+source venv\Scripts\activate
+```
 
-**NOTA**: Durante os testes realizados o kernel do Jupyter se mostrou instável, não conseguindo importar os dados corretamente e reiniciando durante o processo.
+### Executar makefile
 
-### Execução no Python
-No git bash utilizar as diretivas do makefile.
-
-Baixar arquivos tar.gz por portal dadosmg:  
+Baixar arquivos tar.gz do portal dadosmg:  
 ```python
 make download
 ```
@@ -78,13 +83,25 @@ Executar script de carga de dados.
 make run
 ```
 
-Fazer download dos arquivos e executa script de carga.
+Fazer download dos arquivos e executar o script de carga de dados.
 ```python
 make all
 ```
 
+## Execução no Jupyter Notebook
 
-### Visualização de Dados
+Ativar o ambiente virtual:
+```gitbash
+cd diretorio/do/projeto
+source venv\Scripts\activate
+```
+
+Baixar os arquivos csv.gz do portal [dadosmg](https://dados.mg.gov.br/dataset/despesa), salvá-los na pasta \datasets e extrair todos os arquivos csv. Após isso abrir o notebook 'dadosmg_basics.ipynb' no jupyter e executar.  
+
+**NOTA**: Durante os testes realizados o kernel do Jupyter se mostrou instável, não conseguindo importar os dados corretamente e reiniciando durante o processo. Logo é recomendado utilizá-lo para consultas e análises, mas no momento não mais para realizar as cargas de dados. O arquivo 'dadosmg_basics.ipynb' contém snippets de manipulações básicas utilizando o DuckDB em python.
+
+
+## Visualização de Dados
 
 A ferramenta open source [TAD Viewer](https://www.tadviewer.com/) pode ser utilizada para visualizar a base de dados do DuckDB ou arquivos csv, parquet, json antes ou durante o processo de importação.
 
