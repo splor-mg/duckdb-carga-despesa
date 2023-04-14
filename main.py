@@ -37,9 +37,8 @@ def drop_tables(con=None):
 def tables_from_csv(file_paths):
 
     for file in file_paths:
-        head, tail = os.path.split(file)
+        _, tail = os.path.split(file)
         name = tail.split('.')[0]
-        _, file_extension = os.path.splitext(tail)
         con.execute(f"""CREATE TABLE '{name}' AS SELECT * FROM read_csv_auto('{file}')""")
         print(f"Arquivo {file} carregado para tabela {name}\n")
 
@@ -47,7 +46,6 @@ def tables_from_csv(file_paths):
 
 def append_from_csv(file_paths_append, tbl_agg_name):
     #tbl_agg_name = 'ft_despesa'
-    df_agg = pd.DataFrame()
     num_linhas = 0
     exec_error = False
     files_error = []
