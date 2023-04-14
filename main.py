@@ -1,6 +1,7 @@
 import glob
 import duckdb
 import os
+import logging
 
 def drop_tables(DB_NAME, con=None):
 
@@ -8,9 +9,9 @@ def drop_tables(DB_NAME, con=None):
     if tables_list:
         for table_name in tables_list:
             con.execute(f"""DROP TABLE {table_name[0]} """)
-            print(f"Tabela {table_name} apagada.")
+            logging.info(f"Tabela {table_name} apagada.")
     else:
-        print(f"Não há tabelas na database {DB_NAME}")
+        logging.info(f"Não há tabelas na database {DB_NAME}")
 
 
 def tables_from_csv(con, file_paths):
@@ -19,9 +20,7 @@ def tables_from_csv(con, file_paths):
         _, tail = os.path.split(file)
         name = tail.split('.')[0]
         con.execute(f"""CREATE TABLE '{name}' AS SELECT * FROM read_csv_auto('{file}')""")
-        print(f"Arquivo {file} carregado para tabela {name}\n")
-
-    print('-------------------------------------------------------\n')
+        logging.info(f"Arquivo {file} carregado para tabela {name}")
 
 def append_from_csv(con, file_paths_append, tbl_agg_name):
     num_linhas = 0
@@ -39,33 +38,28 @@ def append_from_csv(con, file_paths_append, tbl_agg_name):
 
     # Cria tabela para agregar arquivos CSV de faturamento
     con.execute(f"""CREATE TABLE '{tbl_agg_name}'({table_columns}) """)
-    print(f'Tabela {tbl_agg_name} criada\n')
+    logging.info(f'Tabela {tbl_agg_name} criada')
 
     for file in file_paths_append:
-        print(f'Lendo:', file)
+        logging.info(f'Lendo:{file}')
         df1 = con.execute(f"""SELECT * FROM '{file}' """).df()
         try:
             con.execute(f"""INSERT INTO '{tbl_agg_name}' SELECT * FROM df1""")
-            print(f'Arquivo {file} concatenado na tabela {tbl_agg_name}\n')
+            logging.info(f'Arquivo {file} concatenado na tabela {tbl_agg_name}')
 
         except:
-            print(f"ERRO: Arquivo {file} está vazio ou contém schema divergente dos demais.\n")
+            logging.error(f"Arquivo {file} está vazio ou contém schema divergente dos demais.")
             exec_error = True
             files_error.append(file)
 
 
         num_linhas += len(df1)
 
-    print('-------------------------------------------------------')
-
-    print('Total de linhas tabelas lidas:', num_linhas)
+    logging.info(f'Total de linhas tabelas lidas: {num_linhas}')
 
     # alerta para falha no carregamento de arquivos. Arquivos somente com cabeçalhos geram esse erro.
     if exec_error:
-        print(f"ATENÇÃO! os seguintes arquivos não foram carregados para a base de dados:")
-        print(files_error, sep='\n')
-        print('\n\n')
-
+        logging.warn(f"Os seguintes arquivos não foram carregados para a base de dados: {files_error}")
 
 def descbribe_db(con=None):
     print(con.sql("DESCRIBE"))
@@ -112,4 +106,9 @@ def main():
     append_from_csv(con, file_paths_ft, 'ft_despesa')
 
 if __name__ == '__main__':
+    
+    LOG_FORMAT = '%(asctime)s %(levelname)-5.5s [%(name)s] %(message)s'
+    LOG_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S%z'
+    logging.basicConfig(format=LOG_FORMAT, datefmt=LOG_DATE_FORMAT, level=logging.INFO)
+    logger = logging.getLogger(__name__)
     main()
