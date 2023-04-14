@@ -1,4 +1,3 @@
-import pandas as pd
 import glob
 import duckdb
 import os
@@ -45,7 +44,6 @@ def tables_from_csv(file_paths):
     print('-------------------------------------------------------\n')
 
 def append_from_csv(file_paths_append, tbl_agg_name):
-    #tbl_agg_name = 'ft_despesa'
     num_linhas = 0
     exec_error = False
     files_error = []
@@ -81,10 +79,6 @@ def append_from_csv(file_paths_append, tbl_agg_name):
     print('-------------------------------------------------------')
 
     print('Total de linhas tabelas lidas:', num_linhas)
-    #print('Num linhas da tabela agregada:')
-    #print(con.sql(f"""SELECT COUNT(*) FROM {tbl_agg_name}"""))
-
-    #con.table(tbl_agg_name).show()
 
     # alerta para falha no carregamento de arquivos. Arquivos somente com cabeçalhos geram esse erro.
     if exec_error:
@@ -118,7 +112,3 @@ if __name__ == '__main__':
 
     append_from_csv(file_paths_desp, 'dm_empenho_desp')
     append_from_csv(file_paths_ft, 'ft_despesa')
-    #descbribe_db(con)
-    #describe_table(con,'ft_despesa')
-    #group_by_field(con, 'ft_despesa', 'ano_particao', 'vr_liquidado')
-
