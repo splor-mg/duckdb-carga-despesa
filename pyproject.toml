@@ -1,0 +1,12 @@
+[project]
+name = "dadosmg"
+version = "0.0.0.9000"
+description = "A package for extract and load jobs from dados.mg.gov.br"
+readme = "README.md"
+dependencies = [
+  'duckdb',
+  'ckanapi',
+]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
