@@ -1,10 +1,13 @@
 .PHONY: activate despesa
 
 download:
-	@ckanapi dump datasets --remote https://dados.mg.gov.br/ --datapackages=datasets despesa
+	ckanapi dump datasets --remote https://dados.mg.gov.br/ --datapackages=datasets despesa
 
-run:
-	@python main.py
+load: 
+	python main.py
 
-all: download run 
+transform:
+	cat transform.sql | duckdb database/dadosmg.duckdb
+
+all: load transform
 	
