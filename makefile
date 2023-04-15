@@ -6,8 +6,5 @@ download:
 load: 
 	python main.py
 
-transform:
-	cat transform.sql | duckdb database/dadosmg.duckdb
-
-all: load transform
+all: load
 	
