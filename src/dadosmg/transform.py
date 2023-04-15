@@ -21,7 +21,7 @@ def create_view_from_partitions(db_name, table_prefix):
 def main():
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--db_name', default='database/dadosmg.duckdb')
+    parser.add_argument('db_name')
     parser.add_argument('prefix')
     
     args = parser.parse_args()

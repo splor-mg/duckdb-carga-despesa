@@ -3,9 +3,11 @@ database/*.*
 !database/
 datasets/*
 !datasets/
+data-raw/
+!datasets/.keep
 *.*backup
 venv/
 .git
 .ipynb_checkpoints
 .idea
-
+*.duckdb

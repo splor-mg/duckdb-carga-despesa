@@ -16,9 +16,9 @@ def create_table_from_csv_files(db_name, file_paths):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--db_name', default='database/dadosmg.duckdb')
-    parser.add_argument('--data_dir', default='datasets/despesa/data')
     parser.add_argument('--drop_tables', action=argparse.BooleanOptionalAction, help='Dropa todas as tabelas atuais da database', default=True)
+    parser.add_argument('data_dir')
+    parser.add_argument('db_name')
 
     args = parser.parse_args()
 
