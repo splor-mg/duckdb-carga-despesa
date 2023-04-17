@@ -2,6 +2,8 @@ import argparse
 import logging
 from .utils import DB
 
+logger = logging.getLogger(__name__)
+
 def sql_union_all(tables):
     result =' union all '.join([f'select * from {table[0]}' for table in tables])
     return result
@@ -15,7 +17,7 @@ def create_view_from_partitions(db_name, table_prefix):
         tables = con.execute(_sql).fetchall()
         _sql = sql_union_all(tables)
         _sql = f'CREATE VIEW {table_prefix} AS {_sql}'
-        logging.info(f'Criando view {table_prefix}...')
+        logger.info(f'Criando view {table_prefix}...')
         con.execute(_sql)
 
 def main():

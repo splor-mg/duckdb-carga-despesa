@@ -1,6 +1,8 @@
 import duckdb
 import logging
 
+logger = logging.getLogger(__name__)
+
 class DB:
     def __init__(self, db_name):
         self.db_name = db_name
@@ -18,6 +20,6 @@ def drop_tables(db_name):
         if tables_list:
             for table_name in tables_list:
                 con.execute(f'DROP TABLE {table_name[0]}')
-                logging.info(f'Tabela {table_name} apagada.')
+                logger.info(f'Tabela {table_name} apagada.')
         else:
-            logging.info(f'Não há tabelas na database {db_name}')
+            logger.info(f'Não há tabelas na database {db_name}')

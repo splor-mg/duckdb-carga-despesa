@@ -3,6 +3,8 @@ import logging
 from pathlib import Path
 from .utils import DB, drop_tables
 
+logger = logging.getLogger(__name__)
+
 def create_table_from_csv_files(db_name, file_paths):
     with DB(db_name) as con:
         for file in file_paths:
@@ -12,7 +14,7 @@ def create_table_from_csv_files(db_name, file_paths):
                     SELECT * FROM read_csv_auto('{file}')
                     """
             con.execute(_sql)
-            logging.info(f'Arquivo {file.name} carregado para tabela {table_name}')
+            logger.info(f'Arquivo {file.name} carregado para tabela {table_name}')
 
 def main():
     parser = argparse.ArgumentParser()
