@@ -45,9 +45,12 @@ cd diretorio/do/projeto
 source venv\Scripts\activate
 ```
 
-### Instalar requerimentos
-```python
-pip install -r requirements.txt
+### Instalar projeto
+
+Para instalar o projeto (como [__editable install__](https://setuptools.pypa.io/en/latest/userguide/development_mode.html)) execute
+
+```bash
+pip install -e .
 ```
 
 ### Instalar Jupyter Notebook (opcional)
